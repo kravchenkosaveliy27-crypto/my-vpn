@@ -1,0 +1,2 @@
+Last update: 2026-02-20 22:00:11 UTC
+Source: https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt
