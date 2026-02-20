@@ -1,0 +1,30 @@
+name: Process external raw.txt
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download external raw.txt
+        run: |
+          curl -o raw.txt https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt
+
+      - name: Remove first two lines
+        run: |
+          tail -n +3 raw.txt > processed.txt
+          mv processed.txt raw.txt
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add raw.txt
+          git commit -m "Auto update processed raw.txt" || echo "No changes"
+          git push
