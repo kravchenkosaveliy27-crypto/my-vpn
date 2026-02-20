@@ -2,10 +2,10 @@ name: Sync External File
 
 on:
   schedule:
-    - cron: "*/10 * * * *"  # Каждые 10 минут
+    - cron: "*/10 * * * *"
   workflow_dispatch:
   push:
-    branches: [ main ]  # Проверка при пуше
+    branches: [ main ]
 
 jobs:
   sync-file:
@@ -24,42 +24,34 @@ jobs:
           SOURCE_URL="https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
           TARGET_FILE="my_config.txt"
           
+          echo "TARGET_FILE=$TARGET_FILE" >> $GITHUB_ENV
+          echo "SOURCE_URL=$SOURCE_URL" >> $GITHUB_ENV
+          
           echo "📥 Скачиваем файл из: $SOURCE_URL"
           
-          # Скачиваем с таймаутом и обработкой ошибок
           if curl -L --fail --max-time 30 -o temp_download.txt "$SOURCE_URL"; then
             echo "✅ Файл успешно скачан"
             
-            # Проверка на пустой файл
             if [ ! -s temp_download.txt ]; then
               echo "❌ Файл пустой"
               exit 1
             fi
             
-            # Подсчет строк в оригинале
             ORIGINAL_LINES=$(wc -l < temp_download.txt)
             echo "📊 Исходный файл содержит $ORIGINAL_LINES строк"
             
             # Удаляем первые две строки
             tail -n +3 temp_download.txt > "$TARGET_FILE"
             
-            # Подсчет строк после обработки
             PROCESSED_LINES=$(wc -l < "$TARGET_FILE")
             echo "📊 Обработанный файл содержит $PROCESSED_LINES строк"
             
-            # Проверка результата
             if [ "$PROCESSED_LINES" -eq 0 ]; then
               echo "⚠️ Внимание: обработанный файл пуст!"
             fi
             
-            # Показываем первые несколько строк для проверки
             echo "📄 Первые 5 строк результата:"
             head -5 "$TARGET_FILE"
-            
-            # Сохраняем мета-информацию
-            echo "source_url=$SOURCE_URL" >> $GITHUB_OUTPUT
-            echo "processed_lines=$PROCESSED_LINES" >> $GITHUB_OUTPUT
-            echo "original_lines=$ORIGINAL_LINES" >> $GITHUB_OUTPUT
           else
             echo "❌ Ошибка при скачивании файла"
             exit 1
@@ -69,16 +61,14 @@ jobs:
         id: check_changes
         run: |
           # Проверяем, изменился ли файл
-          if git diff --quiet "$TARGET_FILE"; then
+          if git diff --quiet "${{ env.TARGET_FILE }}"; then
             echo "📭 Нет изменений в файле"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "📦 Обнаружены изменения"
             echo "has_changes=true" >> $GITHUB_OUTPUT
-            
-            # Показываем diff
             echo "📋 Изменения:"
-            git diff "$TARGET_FILE" | head -20
+            git diff "${{ env.TARGET_FILE }}" | head -20 || true
           fi
 
       - name: Commit and push
@@ -88,37 +78,23 @@ jobs:
           git config --global user.email "actions-bot@users.noreply.github.com"
           
           # Добавляем файл в коммит
-          git add "$TARGET_FILE"
+          git add "${{ env.TARGET_FILE }}"
           
-          # Создаем коммит с информацией
-          git commit -m "🔄 Auto-update from external source
-
-          Source: ${{ steps.process.outputs.source_url }}
-          Original lines: ${{ steps.process.outputs.original_lines }}
-          Processed lines: ${{ steps.process.outputs.processed_lines }}
-          Update time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          # Создаем коммит
+          git commit -m "🔄 Auto-update from external source [$(date +'%Y-%m-%d %H:%M')]"
           
           # Пушим изменения
           git push
           
           echo "✅ Изменения отправлены в репозиторий"
 
-      - name: Create timestamp file (optional)
+      - name: Create timestamp file
         run: |
           # Создаем файл с информацией о последнем обновлении
           cat > last_update.txt << EOF
           Last update: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
-          Source: ${{ steps.process.outputs.source_url }}
-          Original lines: ${{ steps.process.outputs.original_lines }}
-          Processed lines: ${{ steps.process.outputs.processed_lines }}
+          Source: ${{ env.SOURCE_URL }}
           EOF
           
-          # Коммитим timestamp файл если нужно
-          git add last_update.txt || true
-
-      - name: Send notification (optional)
-        if: failure()
-        run: |
-          echo "⚠️ Произошла ошибка при синхронизации"
-          # Здесь можно добавить отправку уведомления, например, в Telegram
-          # curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" ...
+          # Добавляем timestamp файл если есть изменения
+          git add last_update.txt 2>/dev/null || true
