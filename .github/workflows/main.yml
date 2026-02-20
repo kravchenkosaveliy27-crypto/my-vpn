@@ -2,7 +2,7 @@ name: Sync External File
 
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/1 * * * *"  # Каждые 2 минуты
   workflow_dispatch:
   push:
     branches: [ main ]
@@ -57,44 +57,25 @@ jobs:
             exit 1
           fi
 
-      - name: Check for changes
-        id: check_changes
-        run: |
-          # Проверяем, изменился ли файл
-          if git diff --quiet "${{ env.TARGET_FILE }}"; then
-            echo "📭 Нет изменений в файле"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "📦 Обнаружены изменения"
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "📋 Изменения:"
-            git diff "${{ env.TARGET_FILE }}" | head -20 || true
-          fi
-
-      - name: Commit and push
-        if: steps.check_changes.outputs.has_changes == 'true'
+      - name: Force commit and push (every 2 minutes)
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions-bot@users.noreply.github.com"
           
-          # Добавляем файл в коммит
+          # Добавляем файл в коммит (всегда)
           git add "${{ env.TARGET_FILE }}"
           
-          # Создаем коммит
-          git commit -m "🔄 Auto-update from external source [$(date +'%Y-%m-%d %H:%M')]"
-          
-          # Пушим изменения
-          git push
-          
-          echo "✅ Изменения отправлены в репозиторий"
-
-      - name: Create timestamp file
-        run: |
-          # Создаем файл с информацией о последнем обновлении
+          # Добавляем timestamp файл
           cat > last_update.txt << EOF
           Last update: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
           Source: ${{ env.SOURCE_URL }}
           EOF
+          git add last_update.txt
           
-          # Добавляем timestamp файл если есть изменения
-          git add last_update.txt 2>/dev/null || true
+          # Создаем коммит (даже если нет изменений, добавим пустой коммит с датой)
+          git commit -m "🔄 Auto-update: $(date +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
+          
+          # Пушим изменения
+          git push
+          
+          echo "✅ Файл принудительно обновлен в репозитории"
