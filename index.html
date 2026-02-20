@@ -3,25 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>src="https://telegram.org/js/telegram-web-app.js"</script>
     
-    <!-- Основные мета-теги -->
-    <title>Название страницы</title>
-    <meta name="description" content="Описание страницы">
-    <meta name="keywords" content="ключевые, слова, страницы">
-    <meta name="author" content="Имя автора">
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Favicon (иконка сайта) -->
-    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+    <title>67 VPN</title>
     
-    <!-- Подключение CSS -->
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Внутренние стили (если нужны) -->
     <style>
-        /* Базовый сброс стилей (опционально) */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
         * {
             margin: 0;
             padding: 0;
@@ -30,46 +21,42 @@
         
         body {
             font-family: "Inter", sans-serif;
-            line-height: 1.6;
-            color: #333;
             min-height: 100vh;
-            background: url(/bg.jpg) no-repeat center center fixed; 
-             background-size: cover;
+            background: #060606;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
 
         .card {
-            padding: 240px 200px;
-            background-color: #060606;
+            padding: 32px;
+            background-color: #0f1322;
             color: #ffffff;
-            align-self: center;
-            position: absolute;
-        
-        
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);  /* смещаем на половину своей ширины/высоты */
+            border-radius: 32px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid #2a2a3a;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-     .card-header {
+        .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-direction: row;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
         .logo-area {
             display: flex;
-            flex-direction: row;
             align-items: center;
-            row-gap: 8px;
-            
+            gap: 8px;
         }
 
         .logo-icon {
             background: #1a61f2;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 18px;
             display: flex;
             align-items: center;
@@ -77,482 +64,364 @@
             font-weight: 700;
             font-size: 1.4rem;
             color: white;
-            box-shadow: 0 8px 16px -6px #1a61f270;
+            box-shadow: 0 4px 10px rgba(26,97,242,0.3);
         }
 
         .vpn-name {
             font-size: 1.3rem;
             font-weight: 600;
-            letter-spacing: -0.3px;
             background: linear-gradient(135deg, #f0f3ff, #cddaff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
+        }
+
+        .free-badge {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            color: #ffd966;
+            margin-left: 10px;
+            display: inline-block;
         }
 
         .status-badge {
-            display: flex;
             background: rgba(0, 210, 110, 0.12);
             border: 1px solid rgba(0, 230, 120, 0.3);
             border-radius: 50px;
             padding: 0.4rem 1rem;
             font-size: 0.8rem;
-            font-weight: 550;
             color: #1fe88e;
-            align-items: center;
-            letter-spacing: 0.2px;
             backdrop-filter: blur(4px);
-            box-shadow: 0 0 8px #00dd7750;
+            font-weight: 500;
         }
 
-
-      .info-grid {
-    display: flex;
-    flex-direction: row;
-    margin-left: 0rem;
-    gap: 2rem;
-    
-    margin: 2rem auto;
-    
-        /* по центру */
-}
-
-.information-column {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    flex: 1;  /* равная ширина колонок */
-}
-.information-row {
-    display: flex;
-     flex-direction: row;
-      justify-content: space-between;
-      gap: 1.5rem;
-    flex: 1;  /* равная ширина колонок */
-}
-.information {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 13px;
-}
-
-.information img {
-    width: 2.5rem;
-    height: auto;
-}
-
-.info-label {
-    font-size: 0.7rem;
-    font-weight: 300;
-    color: #8892b8;  /* сделайте светлее, чтобы было красиво */
-    letter-spacing: 0.15px;
-}
-
-.info-value {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #ffffff;
-}
-
-/* Удалите эти классы - они больше не нужны */
-/* .info-row, .information-row */
-
-        /* жирное выделение для ника */
-        .info-value strong {
-            font-weight: 650;
-            color: white;
+        .status-badge.inactive {
+            background: rgba(255, 70, 70, 0.12);
+            border: 1px solid rgba(255, 70, 70, 0.3);
+            color: #ff6b6b;
         }
 
-        /* блок времени и лимита устройств — особые */
-        .device-limit {
-            color: #b9c4ff;
-            background: rgba(45, 85, 255, 0.1);
-            padding: 4px 12px;
-            border-radius: 26px;
-            font-size: 17px;
-            border: 1px solid #2d4bb360;
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+            background: #1a1e30;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #8892b8;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ffffff;
         }
 
         .time-remaining {
             background: #1b1f32;
             border-radius: 40px;
-            padding: 12px 18px;
-            margin: 8px 0 12px 0;
+            padding: 16px 22px;
+            margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid #2f3c70;
-            box-shadow: inset 0 2px 3px #00000040, 0 6px 8px #00000030;
+            border: 2px solid #2f3c70;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .remaining-label {
-            font-size: 17px;
-            font-weight: 480;
+            font-size: 18px;
+            font-weight: 500;
             color: #b9c2e0;
         }
 
         .remaining-days {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #b7ccff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 0.5px;
         }
 
-        .information {
+        .servers-btn {
+            background: linear-gradient(145deg, #0f1a2f, #1a2a4a);
+            border-radius: 40px;
+            padding: 16px 22px;
             display: flex;
-            flex-direction: row;
             align-items: center;
-            gap: 13px
-        }
-
-.info-row {
-            display: flex;
-            align-items: baseline;
             justify-content: space-between;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
-            padding-bottom: 10px;
-            margin-top: 1.2rem;
-        }
-.instruction-btn {
-    background: #0a0a12;        /* почти черный с микро-оттенком синего */
-    border-radius: 40px;
-    padding: 16px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: default;
-    border: 1px solid #2a2a3a;  /* чуть светлее фона */
-    transition: background 0.15s, border-color 0.15s;
-    margin-top: 22px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);  /* глубокая тень */
-}
-
-.instruction-btn span {
-    font-size: 18px;
-    font-weight: 500;  /* тоньше */
-    color: #ffffff;    /* приглушенный серый */
-    letter-spacing: 0.3px;
-}
-
-.instruction-arrow {
-    background: #1a1a24;        /* чуть светлее фона */
-    width: 38px;
-    height: 38px;
-    border-radius: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    color: #b0b0c0;
-    box-shadow: 0 4px 8px #000000;
-    border: 1px solid #2f2f3f;
-}
-
-/* Эффект при наведении - едва заметный */
-.instruction-btn:hover {
-    border-color: #3a3a50;
-    background: #0f0f18;
-}
-
-
-
-    @media screen and (min-width: 1400px) {
-        .card {
-            width: 35%;
-            padding: 40px;
-            border-radius: 30px;
-           
+            cursor: pointer;
+            border: 1px solid #3a4f8a;
+            margin-top: 12px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(58,79,138,0.3);
         }
 
-        .logo-icon {
-             width: 2.5rem;
-        }
-    }
-
-      @media screen and (max-width: 1200px) {
-        .card {
-                width: 40%;
-                padding: 25px;
-                border-radius: 25px;
-                height: 65%;
-                
-            }
-
-        .logo-icon {
-             width: 2.5rem;
+        .servers-btn span {
+            font-size: 16px;
+            font-weight: 500;
+            color: #b8d0ff;
         }
 
-             .info-grid {
-            margin-left: 0rem;
+        .servers-btn:active {
+            transform: scale(0.98);
+            background: #1a2a4a;
         }
 
+        .instruction-btn {
+            background: #0a0a12;
+            border-radius: 40px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            border: 1px solid #2a2a3a;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .instruction-btn:active {
+            transform: scale(0.98);
+            background: #1a1a24;
+        }
+
+        .instruction-btn span {
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        .servers-arrow, .instruction-arrow {
+            background: #1e2f4a;
+            width: 38px;
+            height: 38px;
+            border-radius: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8ab2ff;
+            border: 1px solid #4a6bb0;
+            font-size: 20px;
+        }
         
-    }
-
-    @media screen and (max-width: 1023px) {
-            .card {
-               width: 45%;
-                padding: 25px;
-                border-radius: 20px;
-                height: 65%;
-            }
-
-            .logo-icon {
-            width: 2.5rem;
+        .refresh-btn {
+            background: #1e2a3a;
+            border: none;
+            color: #8ab2ff;
+            padding: 12px 20px;
+            border-radius: 30px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid #3a4f8a;
         }
-
-        .info-label {
-                font-size: 0.7rem;
-            }
-
-            .info-value {
-                font-size: 1rem;
-            }
-        .info-grid {
-            margin-left: 0rem;
-        }
-        }
-
-    
-
-    
-       
-    @media screen and (max-width: 767px) {
-           
-            
-            .card {
-                width: 59%;
-                padding: 20px;
-                border-radius: 30px;
-                height: 62%;
-            }
-
-            .logo-icon {
-            width: 2.5rem;
-        }
-
-
-        .info-label {
-                font-size: 0.6rem;
-            }
-
-            .info-value {
-                font-size: 0.9rem;
-            }
-            .info-grid {
-            margin-left: 0rem;
-        }
-        }
-
-          @media screen and (max-width: 567px) {
-           
-            
-            .card {
-                width: 70%;
-                padding: 20px;
-                border-radius: 30px;
-                height: 62%;
-            }
-
-            .logo-icon {
-            width: 2.5rem;
-        }
-
-
-        .info-label {
-                font-size: 0.6rem;
-            }
-
-            .info-value {
-                font-size: 0.9rem;
-            }
-            .info-grid {
-            margin-left: 0rem;
-        }
-        }
-    @media screen and (max-width: 479px) {
-           
-           
-            .card {
-                width: 80%;
-                padding: 16px;
-                border-radius: 30px;
-                height: 55%;
-            }
-            .logo-icon {
-             width: 2.5rem;
-             
-        }
-
-            .info-label {
-                font-size: 0.5rem;
-            }
-
-            .info-value {
-                font-size: 0.8rem;
-            }
-
-            .info-grid {
-            margin-left: 0rem;
-            gap: 4rem;
-        }
-
+        
+        .refresh-btn:active {
+            transform: scale(0.98);
+            background: #2a3a4a;
         }
     </style>
-    
 </head>
 <body>
+
 <div class="card">
-    <div class="class-header information-row" style="display: flex; flex-direction: row; justify-content: space-between;">
-        <div class="logo_area" style="display: flex; flex-direction: row; gap: 7px; align-items: center;">
+    <div class="card-header">
+        <div class="logo-area">
             <div class="logo-icon">67</div>
             <div class="vpn-name">VPN</div>
+            <span class="free-badge" id="free-badge">FREE</span>
         </div>
-        <div class="status-badge"><p><div id="status-badge">Активен</div></p></div>
+        <div class="status-badge" id="status-badge">Загрузка...</div>
     </div>
 
-<div class="info-row"></div>
-<div class="info-grid">
-    <!-- Колонка 1 -->
-    <div class="information-column">
-        <div class="information">
-            <img style="width: 2.5rem;" src="/пользователь.svg" alt="">
-            <div style="display: flex; flex-direction: column;">
-                <div class="info-label">Пользователь</div>
-                <div class="info-value"><div id="username">Загрузка...</div></div>
-            </div>
+    <div class="info-grid">
+        <div class="info-row">
+            <span class="info-label">Пользователь</span>
+            <span class="info-value" id="username">Загрузка...</span>
         </div>
-        <div class="information">
-            <img style="width: 2.5rem;" src="/устройства.svg" alt="">
-            <div style="display: flex; flex-direction: column;">
-                <div class="info-label">Лимит устройств</div>
-                <div class="info-value"><div id="devices-limit">1</div></div>
-            </div>
+        
+        <div class="info-row">
+            <span class="info-label">Действует до</span>
+            <span class="info-value" id="expiry-date">Загрузка...</span>
         </div>
+        
+        <div class="info-row">
+            <span class="info-label">Лимит устройств</span>
+            <span class="info-value" id="devices-limit">1</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">Осталось</span>
+            <span class="info-value" id="days-left">Загрузка...</span>
+        </div>
+    </div>
+
+    <div class="time-remaining">
+        <span class="remaining-label">Осталось дней</span>
+        <span class="remaining-days" id="remaining-time">--</span>
+    </div>
+
+    <!-- КНОПКА ПОЛУЧЕНИЯ ПОДПИСКИ -->
+    <div class="servers-btn" id="servers-btn">
+        <span>🚀 Получить подписку VLESS</span>
+        <div class="servers-arrow">→</div>
+    </div>
+
+    <div class="instruction-btn" id="instruction-btn">
+        <span>📖 Инструкция</span>
+        <div class="instruction-arrow">→</div>
     </div>
     
-    <!-- Колонка 2 -->
-    <div class="information-column">
-        <div class="information">
-            <img style="width: 2.5rem;" src="/действует.svg" alt="">
-            <div style="display: flex; flex-direction: column;">
-                <div class="info-label">Действует до</div>
-                <div class="info-value"><div id="expiry-date">Загрузка...</div></div>
-            </div>
-        </div>
-        <div class="information">
-            <img style="width: 2.5rem;" src="/осталось.svg" alt="">
-            <div style="display: flex; flex-direction: column;">
-                <div class="info-label">Осталось</div>
-                <div class="info-value"><div id="days-left">Загрузка...</div></div>
-            </div>
-        </div>
-    </div>
-    
-
-</div>
-<div class="info-row"></div>
-<div class="instruction-btn">
-            <span>Инструкция по запуску</span>
-            <div class="instruction-arrow">→</div>
-        </div>
+    <button class="refresh-btn" id="refresh-btn">
+        🔄 Обновить статус подписки
+    </button>
 </div>
 
-
-<!-- СКРИПТ ДЛЯ ДИНАМИЧЕСКИХ ДАННЫХ -->
 <script>
-    // Инициализация Telegram Web App
+    // Инициализация Telegram
     const tg = window.Telegram.WebApp;
     tg.ready();
-
-    // Функция для обновления всех данных
-    function updateUI(data) {
-        // Данные пользователя
-        if (data.username) {
-            document.getElementById('username').textContent = data.username;
-        }
+    tg.expand();
+    
+    console.log('🚀 Mini App запущен');
+    
+    // Получаем параметры из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get('user_id');
+    const urlName = urlParams.get('name');
+    const urlExpiry = urlParams.get('expiry');
+    const urlDays = urlParams.get('days');
+    const urlDevices = urlParams.get('devices') || '1';
+    
+    // Функция обновления FREE бейджа
+    function updateFreeBadge(daysLeft, isTrial) {
+        const freeBadge = document.getElementById('free-badge');
+        if (!freeBadge) return;
         
-        // Данные подписки
-        if (data.devices) {
-            document.getElementById('devices-limit').textContent = data.devices;
-        }
-        
-        if (data.expiryDate) {
-            document.getElementById('expiry-date').textContent = data.expiryDate;
-        }
-        
-        if (data.daysLeft) {
-            const daysText = data.hoursLeft 
-                ? `${data.daysLeft} Дн. ${data.hoursLeft} ч.`
-                : `${data.daysLeft} дней`;
-            document.getElementById('remaining-time').textContent = daysText;
-            document.getElementById('days-left').textContent = data.daysLeft + ' дней';
-        }
-        
-        if (data.status) {
-            document.getElementById('status-badge').textContent = data.status;
-        }
-    }
-
-    // Получение данных из Telegram
-    try {
-        const user = tg.initDataUnsafe?.user;
-        
-        if (user) {
-            // Подставляем имя пользователя из Telegram
-            updateUI({
-                username: user.first_name || user.username || 'Пользователь'
-            });
-        }
-        
-        // Здесь можно получить данные из URL параметров
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlExpiry = urlParams.get('expiry');
-        const urlDays = urlParams.get('days');
-        const urlDevices = urlParams.get('devices');
-        
-        if (urlExpiry || urlDays || urlDevices) {
-            updateUI({
-                expiryDate: urlExpiry,
-                daysLeft: urlDays,
-                devices: urlDevices
-            });
-        }
-        
-    } catch (e) {
-        console.error('Ошибка получения данных:', e);
-        
-        // Данные для теста (когда нет Telegram)
-        updateUI({
-            username: 'Никита',
-            devices: '1',
-            expiryDate: '05.03.26',
-            daysLeft: '15',
-            hoursLeft: '15'
-        });
-    }
-
-    // Обработчик кнопки инструкции
-    document.getElementById('instruction-btn').addEventListener('click', () => {
-        if (tg) {
-            tg.showAlert('Инструкция по запуску:\n1. Скачайте приложение\n2. Введите ключ доступа\n3. Подключитесь к серверу');
+        if (parseInt(daysLeft) === 0 || isTrial === true) {
+            freeBadge.style.display = 'inline-block';
         } else {
-            alert('Инструкция по запуску:\n1. Скачайте приложение\n2. Введите ключ доступа\n3. Подключитесь к серверу');
+            freeBadge.style.display = 'none';
         }
-    });
-
-    // Опционально: показать кнопку Telegram
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText('Обновить данные');
-        tg.MainButton.show();
     }
+    
+    // Функция обновления интерфейса
+    function updateUI(data) {
+        document.getElementById('username').textContent = data.username || 'Пользователь';
+        document.getElementById('expiry-date').textContent = data.expiry || '--.--.--';
+        document.getElementById('days-left').textContent = (data.daysLeft || '0') + ' дней';
+        document.getElementById('remaining-time').textContent = (data.daysLeft || '0') + ' дн.';
+        document.getElementById('devices-limit').textContent = data.devices || '1';
+        
+        const statusBadge = document.getElementById('status-badge');
+        const daysLeftNum = parseInt(data.daysLeft || '0');
+        const isTrial = data.isTrial === true || data.isTrial === 'true';
+        
+        if (daysLeftNum > 0) {
+            statusBadge.textContent = '✅ Активен';
+            statusBadge.classList.remove('inactive');
+        } else {
+            statusBadge.textContent = '❌ Неактивен';
+            statusBadge.classList.add('inactive');
+        }
+        
+        updateFreeBadge(daysLeftNum, isTrial);
+    }
+    
+    // Функция загрузки статуса
+    function loadStatus() {
+        if (!userId) {
+            updateUI({
+                username: urlName || 'Гость',
+                expiry: urlExpiry || '--.--.--',
+                daysLeft: urlDays || '0',
+                devices: urlDevices,
+                isTrial: true
+            });
+            return;
+        }
+        
+        if (urlExpiry && urlDays) {
+            const daysNum = parseInt(urlDays);
+            const isTrial = daysNum <= 3 || urlDays === '3';
+            
+            updateUI({
+                username: urlName || 'Пользователь',
+                expiry: urlExpiry,
+                daysLeft: urlDays,
+                devices: urlDevices,
+                isTrial: isTrial
+            });
+        } else {
+            updateUI({
+                username: 'Пользователь',
+                expiry: '--.--.--',
+                daysLeft: '0',
+                devices: '1',
+                isTrial: true
+            });
+        }
+    }
+    
+    loadStatus();
+    
+    // Кнопка обновления
+    document.getElementById('refresh-btn').onclick = () => {
+        loadStatus();
+        if (tg) tg.HapticFeedback.impactOccurred('light');
+    };
+    
+    // Кнопка инструкции
+    document.getElementById('instruction-btn').onclick = () => {
+        const message = '📖 Инструкция:\n1. Установите HAPP\n2. Нажмите "Получить подписку"';
+        if (tg) tg.showAlert(message);
+    };
+    
+    // === КНОПКА ПОЛУЧЕНИЯ ПОДПИСКИ (ПРАВИЛЬНЫЙ ИМПОРТ В HAPP) ===
+    document.getElementById('servers-btn').onclick = () => {
+        // ВАША ПРЯМАЯ ССЫЛКА НА ФАЙЛ
+        const yourFileUrl = 'https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_lite.txt';
+        
+        // ФОРМИРУЕМ ПРАВИЛЬНУЮ ССЫЛКУ ДЛЯ HAPP
+        // Используем редирект-сервис, который корректно импортирует в HAPP
+        const happyUrl = `https://add.takovpn.ru/redirect_app?target=happ://crypt4/${encodeURIComponent(yourFileUrl)}`;
+        
+        console.log('🚀 Импортируем в HAPP:', happyUrl);
+        
+        if (tg) {
+            tg.openLink(happyUrl, { try_instant_view: false });
+            tg.HapticFeedback.impactOccurred('medium');
+        } else {
+            window.open(happyUrl, '_blank');
+        }
+    };
+    
+    setInterval(loadStatus, 5000);
 </script>
 
-<!-- Микро-разметка для тестов (можно удалить) -->
-<div style="display: none;" id="test-data" data-user="Никита" data-expiry="05.03.26" data-days="15"></div>
 </body>
 </html>
