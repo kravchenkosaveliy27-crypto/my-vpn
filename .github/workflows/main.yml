@@ -1,102 +1,32 @@
-name: Sync External File
+name: Update My Config
 
 on:
   schedule:
     - cron: "*/2 * * * *"
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
-  sync-file:
+  update-config:
     runs-on: ubuntu-latest
-    
     permissions:
       contents: write
-      
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download and process file
-        id: process
+      - uses: actions/checkout@v4
+      
+      - name: Update file
         run: |
-          SOURCE_URL="https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
-          TARGET_FILE="my_config.txt"
+          # Скачиваем и обрабатываем одной командой
+          curl -s https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt | tail -n +3 > my_config.txt
           
-          echo "TARGET_FILE=$TARGET_FILE" >> $GITHUB_ENV
-          echo "SOURCE_URL=$SOURCE_URL" >> $GITHUB_ENV
-          
-          echo "📥 Скачиваем файл из: $SOURCE_URL"
-          
-          if curl -L --fail --max-time 30 -o temp_download.txt "$SOURCE_URL"; then
-            echo "✅ Файл успешно скачан"
-            
-            if [ ! -s temp_download.txt ]; then
-              echo "❌ Файл пустой"
-              exit 1
-            fi
-            
-            ORIGINAL_LINES=$(wc -l < temp_download.txt)
-            echo "📊 Исходный файл содержит $ORIGINAL_LINES строк"
-            
-            # Удаляем первые две строки
-            tail -n +3 temp_download.txt > "$TARGET_FILE"
-            
-            PROCESSED_LINES=$(wc -l < "$TARGET_FILE")
-            echo "📊 Обработанный файл содержит $PROCESSED_LINES строк"
-            
-            if [ "$PROCESSED_LINES" -eq 0 ]; then
-              echo "⚠️ Внимание: обработанный файл пуст!"
-            fi
-            
-            echo "📄 Первые 5 строк результата:"
-            head -5 "$TARGET_FILE"
-          else
-            echo "❌ Ошибка при скачивании файла"
-            exit 1
-          fi
-
-      - name: Check for changes
-        id: check_changes
+          # Показываем статистику
+          echo "✅ Файл обновлен. Строк: $(wc -l < my_config.txt)"
+          echo "📅 Время: $(date)"
+      
+      - name: Push to repository
         run: |
-          # Проверяем, изменился ли файл
-          if git diff --quiet "${{ env.TARGET_FILE }}"; then
-            echo "📭 Нет изменений в файле"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "📦 Обнаружены изменения"
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "📋 Изменения:"
-            git diff "${{ env.TARGET_FILE }}" | head -20 || true
-          fi
-
-      - name: Commit and push
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions-bot@users.noreply.github.com"
-          
-          # Добавляем файл в коммит
-          git add "${{ env.TARGET_FILE }}"
-          
-          # Создаем коммит
-          git commit -m "🔄 Auto-update from external source [$(date +'%Y-%m-%d %H:%M')]"
-          
-          # Пушим изменения
+          git config user.name "Update-Bot"
+          git config user.email "bot@localhost"
+          git add my_config.txt
+          git commit -m "Update: $(date +'%Y-%m-%d %H:%M')"
           git push
-          
-          echo "✅ Изменения отправлены в репозиторий"
-
-      - name: Create timestamp file
-        run: |
-          # Создаем файл с информацией о последнем обновлении
-          cat > last_update.txt << EOF
-          Last update: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
-          Source: ${{ env.SOURCE_URL }}
-          EOF
-          
-          # Добавляем timestamp файл если есть изменения
-          git add last_update.txt 2>/dev/null || true
-
-вот мой нынешний код
