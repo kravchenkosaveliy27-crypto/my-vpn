@@ -1,77 +1,43 @@
-name: Auto Update Every 2 Minutes
+\name: Update My Config
 
 on:
   schedule:
-    - cron: "*/2 * * * *"  # Каждые 2 минуты
-  workflow_dispatch:  # Для ручного запуска
+    - cron: "*/2 * * * *"
+  workflow_dispatch:
 
 jobs:
-  update:
+  update-config:
     runs-on: ubuntu-latest
-    
     permissions:
-      contents: write  # Право на запись в репозиторий
-
+      contents: write
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download and process file
+      - uses: actions/checkout@v4
+      
+      - name: Download and process
         run: |
-          echo "==================================="
-          echo "🕒 Время запуска: $(date +'%Y-%m-%d %H:%M:%S')"
-          echo "==================================="
+          # Скачиваем во временный файл
+          curl -L --fail -o temp.txt "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
           
-          # URL исходного файла
-          SOURCE_URL="https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
+          # Удаляем первые 2 строки
+          tail -n +3 temp.txt > my_config.txt
           
-          # Имя целевого файла
-          TARGET_FILE="my_config.txt"
+          # Удаляем временный файл
+          rm temp.txt
           
-          echo "📥 Скачиваю файл из источника..."
-          
-          # Скачиваем файл
-          curl -L --fail -o temp.txt "$SOURCE_URL"
-          
-          # Проверяем, что файл скачался
-          if [ ! -f temp.txt ]; then
-            echo "❌ Ошибка: файл не скачался!"
-            exit 1
-          fi
-          
-          # Считаем строки в исходном файле
-          ORIGINAL_LINES=$(wc -l < temp.txt)
-          echo "📊 В исходном файле: $ORIGINAL_LINES строк"
-          
-          # Удаляем первые две строки и сохраняем в целевой файл
-          echo "✂️ Удаляю первые 2 строки..."
-          tail -n +3 temp.txt > "$TARGET_FILE"
-          
-          # Считаем строки в обработанном файле
-          PROCESSED_LINES=$(wc -l < "$TARGET_FILE")
-          echo "📊 В обработанном файле: $PROCESSED_LINES строк"
-          
-          # Показываем первые несколько строк для проверки
-          echo "📄 Первые 3 строки результата:"
-          head -3 "$TARGET_FILE"
-          
-          echo "✅ Файл успешно обработан!"
-
-      - name: Commit and push changes
+          echo "✅ Файл обновлен. Строк: $(wc -l < my_config.txt)"
+      
+      - name: Push to repository
         run: |
-          # Настраиваем git
-          git config --global user.name "Auto-Updater"
-          git config --global user.email "updater@localhost"
+          git config user.name "Update-Bot"
+          git config user.email "bot@localhost"
           
-          # Добавляем файл в коммит
           git add my_config.txt
           
-          # Создаем коммит с текущей датой и временем
-          git commit -m "🔄 Автообновление: $(date +'%Y-%m-%d %H:%M:%S')"
-          
-          # Отправляем изменения в репозиторий
-          git push
-          
-          echo "==================================="
-          echo "✅ Готово! Файл my_config.txt обновлен"
-          echo "==================================="
+          if git diff --staged --quiet; then
+            echo "📭 Нет изменений"
+          else
+            git commit -m "🔄 Update: $(date +'%Y-%m-%d %H:%M')"
+            git push
+            echo "✅ Изменения отправлены"
+          fi
