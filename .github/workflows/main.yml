@@ -1,4 +1,4 @@
-name: Update My Config
+name: Auto Update Every 2 Minutes
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-config:
+  update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -14,30 +14,67 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Download and process
+      - name: Download and process file
         run: |
-          # Скачиваем во временный файл
-          curl -L --fail -o temp.txt "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
+          echo "=== НАЧАЛО ОБНОВЛЕНИЯ ==="
+          echo "📅 Время: $(date)"
+          
+          # Показываем текущий файл (если есть)
+          if [ -f my_config.txt ]; then
+            echo "📄 Текущий файл существует. Размер: $(wc -l < my_config.txt) строк"
+            echo "Первые 3 строки текущего файла:"
+            head -3 my_config.txt
+          else
+            echo "📄 Текущий файл не существует"
+          fi
+          
+          # Скачиваем новый файл
+          echo "🌐 Скачиваю с GitHub..."
+          curl -s -o source.txt "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt"
+          
+          # Проверяем размер скачанного файла
+          echo "📊 Скачано: $(wc -l < source.txt) строк"
+          echo "Первые 3 строки скачанного:"
+          head -3 source.txt
           
           # Удаляем первые 2 строки
-          tail -n +3 temp.txt > my_config.txt
+          echo "✂️ Удаляю первые 2 строки..."
+          tail -n +3 source.txt > my_config.txt.new
           
-          # Удаляем временный файл
-          rm temp.txt
+          # Проверяем результат
+          echo "📊 После удаления: $(wc -l < my_config.txt.new) строк"
+          echo "Первые 3 строки результата:"
+          head -3 my_config.txt.new
           
-          echo "✅ Файл обновлен. Строк: $(wc -l < my_config.txt)"
+          # Сравниваем с текущим файлом
+          if [ -f my_config.txt ]; then
+            if cmp -s my_config.txt my_config.txt.new; then
+              echo "📭 Файлы идентичны - изменений нет"
+            else
+              echo "📦 Файлы отличаются - будут изменения"
+              echo "Различия:"
+              diff my_config.txt my_config.txt.new | head -10 || true
+            fi
+          fi
+          
+          # Заменяем файл
+          mv my_config.txt.new my_config.txt
+          rm -f source.txt
+          
+          echo "=== ОБНОВЛЕНИЕ ЗАВЕРШЕНО ==="
       
-      - name: Push to repository
+      - name: Commit and push
         run: |
-          git config user.name "Update-Bot"
+          git config user.name "Auto Bot"
           git config user.email "bot@localhost"
           
           git add my_config.txt
           
           if git diff --staged --quiet; then
-            echo "📭 Нет изменений"
+            echo "📭 Нет изменений для коммита"
           else
-            git commit -m "🔄 Update: $(date +'%Y-%m-%d %H:%M')"
+            echo "📦 Есть изменения, создаю коммит..."
+            git commit -m "🔄 Update: $(date +'%Y-%m-%d %H:%M:%S')"
             git push
             echo "✅ Изменения отправлены"
           fi
