@@ -1,4 +1,4 @@
-\name: Update My Config
+name: Update My Config
 
 on:
   schedule:
